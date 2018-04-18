@@ -14,8 +14,28 @@ class App extends Component {
     newMeasurement: '',
   };
 
-  handleSubmitMessage = (waist) => {
-    const date = dateStamp();
+  listenForChanges = () => {
+    firebase
+      .database()
+      .ref(`waist/${this.state.user.uid}`)
+      .on('value', (snapshot) => {
+        this.onDataChange(snapshot);
+        if (!this.state.messagesLoaded) {
+          this.setState({ recordsLoaded: true });
+        }
+      });
+  };
+
+  onDataChange = (snapshot) => {
+    const data = Object.keys(snapshot.val()).map((key) => {
+      const record = snapshot.val()[key];
+      record.id = key;
+      return record;
+    });
+  };
+
+  handleSubmitMessage = (waist, date) => {
+    date = date || dateStamp();
     console.log(this.state.user.uid);
     console.log(date);
     console.log(waist);
@@ -33,7 +53,6 @@ class App extends Component {
       return rec;
     });
     this.setState({ records });
-    console.log(this.state.records);
   };
 
   componentDidMount() {
@@ -43,20 +62,22 @@ class App extends Component {
       console.log('Auth state changed. user: ' + user.uid);
       if (user) {
         this.setState({ user });
+        this.listenForChanges(); // Initialize listener for db changes
       } else {
         this.props.history.push('/login');
       }
-      // Get records
-      firebase
-        .database()
-        .ref(`waist/${this.state.user.uid}`)
-        .on('value', (snapshot) => {
-          this.onRecord(snapshot);
-          if (!this.state.recordsLoaded) {
-            this.setState({ recordsLoaded: true });
-          }
-        });
     });
+
+    // Get records
+    firebase
+      .database()
+      .ref(`waist/${this.state.user.uid}`)
+      .on('value', (snapshot) => {
+        this.onRecord(snapshot);
+        if (!this.state.recordsLoaded) {
+          this.setState({ recordsLoaded: true });
+        }
+      });
   }
 
   render() {

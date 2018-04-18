@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import ReactDOM from 'react-dom';
 import Header from './Header';
 import WaistRecord from './WaistRecord';
+import Test from './Test';
 
 export default class WeightContainer extends Component {
-  state = { newMeasurement: '' };
+  state = { newMeasurement: '', edit: '', testArr: [ 1, 2, 3 ] };
 
   handleLogout = () => {
     firebase.auth().signOut();
@@ -27,19 +28,6 @@ export default class WeightContainer extends Component {
     }
   };
 
-  componentDidMount() {
-    // Get records for user
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        firebase.database().ref(`waist/${user.uid}`).on('value', (snapshop) => {
-          console.log(snapshop);
-        });
-      } else {
-        console.log('User not available.');
-      }
-    });
-  }
-
   render() {
     return (
       <div id="WeightContainer" className="inner-container">
@@ -56,11 +44,8 @@ export default class WeightContainer extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.props.records.map((rec, i) => (
-              <tr id={rec.id}>
-                <td>{rec.id}</td>
-                <td>{rec.cm}</td>
-              </tr>
+            {this.props.records.map((rec) => (
+              <WaistRecord key={rec.id} date={rec.id} cm={rec.cm} />
             ))}
           </tbody>
         </table>
