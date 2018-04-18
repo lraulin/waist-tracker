@@ -14,23 +14,18 @@ class App extends Component {
     newMeasurement: '',
   };
 
-  listenForChanges = () => {
-    firebase
-      .database()
-      .ref(`waist/${this.state.user.uid}`)
-      .on('value', (snapshot) => {
-        this.onDataChange(snapshot);
-        if (!this.state.messagesLoaded) {
-          this.setState({ recordsLoaded: true });
-        }
+  // Listen and update on Firebase change
+  fetchData = (userID) => {
+    firebase.database().ref(`waist/${userID}`).on('value', (snapshot) => {
+      const records = Object.keys(snapshot.val()).map((key) => {
+        const record = snapshot.val()[key];
+        record.date = key;
+        return record;
       });
-  };
-
-  onDataChange = (snapshot) => {
-    const data = Object.keys(snapshot.val()).map((key) => {
-      const record = snapshot.val()[key];
-      record.id = key;
-      return record;
+      this.setState({ records });
+      if (!this.state.recordsLoaded) {
+        this.setState({ recordsLoaded: true });
+      }
     });
   };
 
@@ -46,38 +41,18 @@ class App extends Component {
     this.setState({ showAdd: false });
   };
 
-  onRecord = (snapshot) => {
-    const records = Object.keys(snapshot.val()).map((key) => {
-      const rec = snapshot.val()[key];
-      rec.id = key;
-      return rec;
-    });
-    this.setState({ records });
-  };
-
   componentDidMount() {
-    // Check in user is logged in
+    // Check if user is logged in
     console.log('Mounted!');
     firebase.auth().onAuthStateChanged((user) => {
-      console.log('Auth state changed. user: ' + user.uid);
       if (user) {
+        console.log('Auth state changed. user: ' + user.uid);
         this.setState({ user });
-        this.listenForChanges(); // Initialize listener for db changes
+        this.fetchData(user.uid); // Initialize listener for db changes
       } else {
         this.props.history.push('/login');
       }
     });
-
-    // Get records
-    firebase
-      .database()
-      .ref(`waist/${this.state.user.uid}`)
-      .on('value', (snapshot) => {
-        this.onRecord(snapshot);
-        if (!this.state.recordsLoaded) {
-          this.setState({ recordsLoaded: true });
-        }
-      });
   }
 
   render() {

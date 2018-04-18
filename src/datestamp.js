@@ -1,10 +1,15 @@
 // Date format YYYY-MM-DD
 function dateStamp() {
   const date = new Date();
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  return `${year}-${month}-${day}`;
+  var d = new Date(date),
+    month = '' + (d.getMonth() + 1),
+    day = '' + d.getDate(),
+    year = d.getFullYear();
+
+  if (month.length < 2) month = '0' + month;
+  if (day.length < 2) day = '0' + day;
+
+  return [ year, month, day ].join('-');
 }
 
 export { dateStamp };

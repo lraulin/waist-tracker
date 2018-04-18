@@ -4,6 +4,10 @@ const spacer = {
   paddingRight: '3em',
 };
 
+const numField = {
+  width: '4em',
+};
+
 class WaistRecord extends Component {
   state = { edit: false, date: '', cm: '' };
 
@@ -28,19 +32,29 @@ class WaistRecord extends Component {
     this.setState({ cm: this.props.cm });
   }
 
+  componentWillReceiveProps() {
+    // Update state with new props
+  }
+
   render() {
     const editButtonText = this.state.edit ? 'Save' : 'Edit';
     const dateField = this.state.edit ? (
       <input
-        type="text"
+        type="date"
         onChange={this.handleDateChange}
         value={this.state.date}
+        size={8}
       />
     ) : (
       this.state.date
     );
     const cmField = this.state.edit ? (
-      <input type="text" onChange={this.handleCmChange} value={this.state.cm} />
+      <input
+        style={numField}
+        type="number"
+        onChange={this.handleCmChange}
+        value={this.state.cm}
+      />
     ) : (
       this.state.cm
     );

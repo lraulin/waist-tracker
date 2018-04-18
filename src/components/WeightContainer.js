@@ -45,7 +45,7 @@ export default class WeightContainer extends Component {
           </thead>
           <tbody>
             {this.props.records.map((rec) => (
-              <WaistRecord key={rec.id} date={rec.id} cm={rec.cm} />
+              <WaistRecord key={rec.date} date={rec.date} cm={rec.cm} />
             ))}
           </tbody>
         </table>
