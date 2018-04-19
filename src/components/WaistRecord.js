@@ -9,71 +9,45 @@ const numField = {
 };
 
 class WaistRecord extends Component {
-	state = { edit: false, date: '', oldDate: '', cm: '' };
+	state = { edit: false, newDate: '', oldDate: '', newCm: '' };
 
-	loadData() {
-		this.setState({ date: this.props.date });
-		this.setState({ cm: this.props.cm });
-		this.setState({ oldDate: this.props.date });
-	}
+	// loadData(date = this.props.date, cm = this.props.cm) {
+	// 	console.log('Loading Data...');
+	// 	console.log(date, cm);
+	// 	this.setState({ date: this.props.date });
+	// 	this.setState({ cm: this.props.cm });
+	// 	this.setState({ oldDate: date });
+	// 	console.log(this.state);
+	// }
 
 	handleEdit = () => {
 		// User clicked "Edit"
+		this.setState({ newDate: this.props.date, newCm: this.props.cm });
 		if (!this.state.edit) {
 			this.setState({ edit: true });
 		} else {
 			// User clicked "Save"
 			this.props.handleSaveRecord(
-				this.state.cm,
-				this.state.date,
-				this.state.oldDate,
+				this.state.newCm,
+				this.state.newDate,
+				this.props.date,
 			);
 			this.setState({ edit: false });
 		}
 	};
 
 	handleDateChange = (e) => {
-		this.setState({ date: e.target.value });
+		this.setState({ newDate: e.target.value });
 	};
 
 	handleCmChange = (e) => {
-		this.setState({ cm: e.target.value });
+		this.setState({ newCm: e.target.value });
 	};
 
 	onClickDelete = () => {
 		const userId = firebase.auth().currentUser.uid;
-		firebase.database().ref(`waist/${userId}/${this.state.date}`).remove();
+		firebase.database().ref(`waist/${userId}/${this.props.date}`).remove();
 	};
-
-	componentWillMount() {
-		console.log('WaistRecord Will Mount');
-	}
-
-	componentDidMount() {
-		console.log('WaistRecord Did Mount');
-		this.loadData();
-	}
-
-	componentWillReceiveProps() {
-		console.log('WaistRecord Will Recieve Props');
-	}
-
-	// shouldComponentUpdate() {
-	// 	console.log('WaistRecord Should Update?');
-	// }
-
-	componentWillUpdate() {
-		console.log('WaistRecord Will Update');
-		this.loadData();
-	}
-
-	componentDidUpdate() {
-		console.log('WaistRecord Did Update');
-	}
-
-	componentWillUnmount() {
-		console.log('WaistRecord Will Unmount');
-	}
 
 	render() {
 		const editButtonText = this.state.edit ? 'Save' : 'Edit';
@@ -81,21 +55,21 @@ class WaistRecord extends Component {
 			<input
 				type="date"
 				onChange={this.handleDateChange}
-				value={this.state.date}
+				value={this.state.newDate}
 				size={8}
 			/>
 		) : (
-			this.state.date
+			this.props.date
 		);
 		const cmField = this.state.edit ? (
 			<input
 				style={numField}
 				type="number"
 				onChange={this.handleCmChange}
-				value={this.state.cm}
+				value={this.state.newCm}
 			/>
 		) : (
-			this.state.cm
+			this.props.cm
 		);
 		return (
 			<tr>

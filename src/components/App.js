@@ -36,20 +36,19 @@ class App extends Component {
 	};
 
 	handleSaveRecord = (waist, date = dateStamp(), oldDate) => {
-		console.log(this.state.user.uid);
-		console.log(date);
-		console.log(oldDate);
-		console.log(waist);
 		firebase
 			.database()
 			.ref(`waist/${this.state.user.uid}/${date}`)
 			.set({ cm: waist });
 		if (oldDate && date != oldDate) {
-			// Delete old record
+			console.log('Deleting old record...');
+			console.log(this.state.user.uid);
+			console.log(date);
+			console.log(oldDate);
+			console.log(waist);
 			firebase
 				.database()
-				.ref(`waist/${this.state.user.uid}`)
-				.child({ oldDate })
+				.ref(`waist/${this.state.user.uid}/${oldDate}`)
 				.remove();
 		}
 	};
