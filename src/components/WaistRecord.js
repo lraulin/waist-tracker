@@ -9,12 +9,25 @@ const numField = {
 };
 
 class WaistRecord extends Component {
-	state = { edit: false, date: '', cm: '' };
+	state = { edit: false, date: '', oldDate: '', cm: '' };
+
+	loadData() {
+		this.setState({ date: this.props.date });
+		this.setState({ cm: this.props.cm });
+		this.setState({ oldDate: this.props.date });
+	}
 
 	handleEdit = () => {
+		// User clicked "Edit"
 		if (!this.state.edit) {
 			this.setState({ edit: true });
 		} else {
+			// User clicked "Save"
+			this.props.handleSaveRecord(
+				this.state.cm,
+				this.state.date,
+				this.state.oldDate,
+			);
 			this.setState({ edit: false });
 		}
 	};
@@ -27,17 +40,39 @@ class WaistRecord extends Component {
 		this.setState({ cm: e.target.value });
 	};
 
-	onSave = () => {
-		this.props.handleSubmit(this.state.cm, this.state.date);
+	onClickDelete = () => {
+		const userId = firebase.auth().currentUser.uid;
+		firebase.database().ref(`waist/${userId}/${this.state.date}`).remove();
 	};
 
+	componentWillMount() {
+		console.log('WaistRecord Will Mount');
+	}
+
 	componentDidMount() {
-		this.setState({ date: this.props.date });
-		this.setState({ cm: this.props.cm });
+		console.log('WaistRecord Did Mount');
+		this.loadData();
 	}
 
 	componentWillReceiveProps() {
-		// Update state with new props
+		console.log('WaistRecord Will Recieve Props');
+	}
+
+	// shouldComponentUpdate() {
+	// 	console.log('WaistRecord Should Update?');
+	// }
+
+	componentWillUpdate() {
+		console.log('WaistRecord Will Update');
+		this.loadData();
+	}
+
+	componentDidUpdate() {
+		console.log('WaistRecord Did Update');
+	}
+
+	componentWillUnmount() {
+		console.log('WaistRecord Will Unmount');
 	}
 
 	render() {
@@ -68,7 +103,7 @@ class WaistRecord extends Component {
 				<td>{cmField}</td>
 				<td>
 					<button onClick={this.handleEdit}>{editButtonText}</button>
-					<button>Delete</button>
+					<button onClick={this.onClickDelete}>Delete</button>
 				</td>
 			</tr>
 		);

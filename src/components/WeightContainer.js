@@ -17,7 +17,7 @@ export default class WeightContainer extends Component {
 	};
 
 	handleSubmit = () => {
-		this.props.onSubmit(this.state.newMeasurement);
+		this.props.handleSaveRecord(this.state.newMeasurement);
 		this.setState({ newMeasurement: '' });
 	};
 
@@ -49,7 +49,7 @@ export default class WeightContainer extends Component {
 								key={rec.date}
 								date={rec.date}
 								cm={rec.cm}
-								handleSubmit={this.props.onSubmit}
+								handleSaveRecord={this.props.handleSaveRecord}
 							/>
 						))}
 					</tbody>
