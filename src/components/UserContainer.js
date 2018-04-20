@@ -11,12 +11,13 @@ export default class UserContainer extends Component {
     heightEntered: false,
   };
 
-  handleSubmit = (e) => {
-    console.log('handle submit');
-    e.preventDefault();
-    const height = e.target.value;
-    const { idealShoulders, idealWaist } = adonisIndex();
-    this.setState({ height, idealShoulders, idealWaist, heightEntered: true });
+  handleSubmit = () => {
+    const { idealShoulders, idealWaist } = adonisIndex(this.state.height);
+    this.setState({
+      idealShoulders,
+      idealWaist,
+      heightEntered: true,
+    });
   };
 
   handleInput = (e) => {
