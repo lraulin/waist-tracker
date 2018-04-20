@@ -1,12 +1,23 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Route, withRouter } from 'react-router-dom';
 import ReactDOM from 'react-dom';
 import Header from './Header';
 import WaistRecord from './WaistRecord';
 import Test from './Test';
+import { inToCm } from '../helpers';
 
-export default class WeightContainer extends Component {
-	state = { newMeasurement: '', edit: '', testArr: [ 1, 2, 3 ] };
+const btnUnit = {
+	float: 'right',
+	marginTop: '5px',
+};
+
+const btnSpacer = {
+	...btnUnit,
+	marginRight: '4em',
+};
+
+class WeightContainer extends Component {
+	state = { newMeasurement: '', edit: '', testArr: [ 1, 2, 3 ], metric: true };
 
 	handleLogout = () => {
 		firebase.auth().signOut();
@@ -17,7 +28,10 @@ export default class WeightContainer extends Component {
 	};
 
 	handleSubmit = () => {
-		this.props.handleSaveRecord(this.state.newMeasurement);
+		const measurement = this.state.metric
+			? this.state.newMeasurement
+			: Math.round(inToCm(this.state.newMeasurement));
+		this.props.handleSaveRecord(measurement);
 		this.setState({ newMeasurement: '' });
 	};
 
@@ -28,12 +42,55 @@ export default class WeightContainer extends Component {
 		}
 	};
 
+	handleClickCm = () => {
+		this.setState({ metric: true });
+	};
+
+	handleClickIn = () => {
+		this.setState({ metric: false });
+	};
+
+	handleClickProfile = () => {
+		this.props.history.push(`/users/${this.props.user.uid}`);
+	};
+
 	render() {
 		return (
 			<div id="WeightContainer" className="inner-container">
 				<Header>
 					<button className="red" onClick={this.handleLogout}>
 						Logout
+					</button>
+					<button className="red" onClick={this.handleClickProfile}>
+						Profile
+					</button>
+					<button
+						className={
+							this.state.metric ? (
+								'btn btn-primary btn-sm active'
+							) : (
+								'btn btn-secondary btn-sm'
+							)
+						}
+						aria-pressed={this.state.metric}
+						onClick={this.handleClickCm}
+						style={btnSpacer}
+					>
+						cm
+					</button>
+					<button
+						className={
+							!this.state.metric ? (
+								'btn btn-primary btn-sm active'
+							) : (
+								'btn btn-secondary btn-sm'
+							)
+						}
+						aria-pressed={!this.state.metric}
+						onClick={this.handleClickIn}
+						style={btnUnit}
+					>
+						in
 					</button>
 				</Header>
 				<table>
@@ -50,6 +107,7 @@ export default class WeightContainer extends Component {
 								date={rec.date}
 								cm={rec.cm}
 								handleSaveRecord={this.props.handleSaveRecord}
+								metric={this.state.metric}
 							/>
 						))}
 					</tbody>
@@ -72,3 +130,5 @@ export default class WeightContainer extends Component {
 		);
 	}
 }
+
+export default withRouter(WeightContainer);

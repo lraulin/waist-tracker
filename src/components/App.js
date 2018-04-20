@@ -14,6 +14,7 @@ class App extends Component {
 			records: [],
 			recordsLoaded: false,
 			newMeasurement: '',
+			metric: true,
 		};
 		this.handleSaveRecord = this.handleSaveRecord.bind(this);
 	}
@@ -21,13 +22,11 @@ class App extends Component {
 	// Listen and update on Firebase change
 	fetchData = (userID) => {
 		firebase.database().ref(`waist/${userID}`).on('value', (snapshot) => {
-			console.log('App.fetchData(): data changed');
 			const records = Object.keys(snapshot.val()).map((key) => {
 				const record = snapshot.val()[key];
 				record.date = key;
 				return record;
 			});
-			console.log('Updating state...');
 			this.setState({ records });
 			if (!this.state.recordsLoaded) {
 				this.setState({ recordsLoaded: true });
@@ -36,16 +35,13 @@ class App extends Component {
 	};
 
 	handleSaveRecord = (waist, date = dateStamp(), oldDate) => {
+		// Save new record or overwrite old record if dates match
 		firebase
 			.database()
 			.ref(`waist/${this.state.user.uid}/${date}`)
 			.set({ cm: waist });
+		// Dates don't match; delete old record
 		if (oldDate && date != oldDate) {
-			console.log('Deleting old record...');
-			console.log(this.state.user.uid);
-			console.log(date);
-			console.log(oldDate);
-			console.log(waist);
 			firebase
 				.database()
 				.ref(`waist/${this.state.user.uid}/${oldDate}`)
@@ -58,7 +54,6 @@ class App extends Component {
 		console.log('Mounted!');
 		firebase.auth().onAuthStateChanged((user) => {
 			if (user) {
-				console.log('Auth state changed. user: ' + user.uid);
 				this.setState({ user });
 				this.fetchData(user.uid); // Initialize listener for db changes
 			} else {

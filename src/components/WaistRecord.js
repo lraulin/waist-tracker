@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { inToCm, cmToIn } from '../helpers';
 
 const spacer = {
 	paddingRight: '3em',
@@ -9,26 +10,25 @@ const numField = {
 };
 
 class WaistRecord extends Component {
-	state = { edit: false, newDate: '', oldDate: '', newCm: '' };
-
-	// loadData(date = this.props.date, cm = this.props.cm) {
-	// 	console.log('Loading Data...');
-	// 	console.log(date, cm);
-	// 	this.setState({ date: this.props.date });
-	// 	this.setState({ cm: this.props.cm });
-	// 	this.setState({ oldDate: date });
-	// 	console.log(this.state);
-	// }
+	state = {
+		edit: false,
+		newDate: this.props.date,
+		oldDate: this.props.date,
+		newMeasurement: this.props.measurement,
+	};
 
 	handleEdit = () => {
+		this.setState({ newDate: this.props.date, newMeasurement: this.props.cm });
 		// User clicked "Edit"
-		this.setState({ newDate: this.props.date, newCm: this.props.cm });
 		if (!this.state.edit) {
 			this.setState({ edit: true });
 		} else {
 			// User clicked "Save"
+			const measurement = this.props.metric
+				? this.state.newMeasurement
+				: Math.round(inToCm(this.state.newMeasurement));
 			this.props.handleSaveRecord(
-				this.state.newCm,
+				measurement,
 				this.state.newDate,
 				this.props.date,
 			);
@@ -40,8 +40,8 @@ class WaistRecord extends Component {
 		this.setState({ newDate: e.target.value });
 	};
 
-	handleCmChange = (e) => {
-		this.setState({ newCm: e.target.value });
+	handleMeasurementChange = (e) => {
+		this.setState({ newMeasurement: e.target.value });
 	};
 
 	onClickDelete = () => {
@@ -65,11 +65,13 @@ class WaistRecord extends Component {
 			<input
 				style={numField}
 				type="number"
-				onChange={this.handleCmChange}
-				value={this.state.newCm}
+				onChange={this.handleMeasurementChange}
+				value={this.state.newMeasurement}
 			/>
-		) : (
+		) : this.props.metric ? (
 			this.props.cm
+		) : (
+			Math.round(cmToIn(this.props.cm))
 		);
 		return (
 			<tr>

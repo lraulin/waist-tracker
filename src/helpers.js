@@ -1,5 +1,10 @@
+const GOLDEN_RATIO = 1.618;
+const IDEAL_WAIST_TO_HEIGHT_RATIO = 0.447;
+const INCHES_TO_CM = 2.54;
+const CM_TO_INCHES = 1 / 2.54;
+
 // Date format YYYY-MM-DD
-function dateStamp() {
+export function dateStamp() {
 	const date = new Date();
 	var d = new Date(date),
 		month = '' + (d.getMonth() + 1),
@@ -12,12 +17,16 @@ function dateStamp() {
 	return [ year, month, day ].join('-');
 }
 
-function inToCm(inches) {
-	return inches * 2.54;
+export function inToCm(inches) {
+	return inches * INCHES_TO_CM;
 }
 
-function cmToIn(cm) {
-	return cm * 0.393701;
+export function cmToIn(cm) {
+	return cm * CM_TO_INCHES;
 }
 
-export { dateStamp, inToCm, cmToIn };
+export function adonisIndex(height) {
+	const idealWaist = height * IDEAL_WAIST_TO_HEIGHT_RATIO;
+	const idealShoulders = idealWaist * GOLDEN_RATIO;
+	return { idealWaist, idealShoulders };
+}
