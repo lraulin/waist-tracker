@@ -8,10 +8,10 @@ export default class UserContainer extends Component {
     height: '',
     idealWaist: '',
     idealShoulders: '',
-    heightEntered: false
+    heightEntered: false,
   };
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     console.log('handle submit');
     e.preventDefault();
     const height = e.target.value;
@@ -19,12 +19,14 @@ export default class UserContainer extends Component {
     this.setState({ height, idealShoulders, idealWaist, heightEntered: true });
   };
 
-  handleInput = e => {
+  handleInput = (e) => {
     this.setState({ height: e.target.value });
   };
 
-  handleKeyDown = e => {
-    // e
+  handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      this.handleSubmit();
+    }
   };
 
   render() {
@@ -44,11 +46,15 @@ export default class UserContainer extends Component {
               onInput={this.handleInput}
               onKeyDown={this.handleKeyDown}
             />
-            <button type="submit" onClick={this.handleSubmit}>
-              OK
-            </button>
+            <button onClick={this.handleSubmit}>OK</button>
           </div>
-        ) : null}
+        ) : (
+          <div id="userData">
+            <p>Height: {this.state.height} cm</p>
+            <p>Target Waist: {this.state.idealWaist} cm</p>
+            <p>Target Shoulders: {this.state.idealShoulders} cm</p>
+          </div>
+        )}
       </div>
     );
   }
