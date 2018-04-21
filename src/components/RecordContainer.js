@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { Link, Route, withRouter } from 'react-router-dom';
 import ReactDOM from 'react-dom';
 import Header from './Header';
-import WaistRecord from './WaistRecord';
+import Record from './Record';
 import Test from './Test';
-import { inToCm, dateStamp } from '../helpers';
+import { inToCm, cmToIn, dateStamp } from '../helpers';
 
 const btnUnit = {
   float: 'right',
@@ -16,17 +16,12 @@ const btnSpacer = {
   marginRight: '4em',
 };
 
-class WeightContainer extends Component {
+class RecordContainer extends Component {
   state = {
     newMeasurement: '',
     edit: '',
-    testArr: [ 1, 2, 3 ],
     metric: true,
     date: dateStamp(),
-  };
-
-  handleLogout = () => {
-    firebase.auth().signOut();
   };
 
   handleInputChange = (e) => {
@@ -64,9 +59,13 @@ class WeightContainer extends Component {
     this.setState({ date: e.target.value });
   };
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({ newMeasurement: nextProps.lastRecord });
+  }
+
   render() {
     return (
-      <div id="WeightContainer" className="inner-container">
+      <div id="RecordContainer" className="inner-container">
         <Header>
           <button className="red" onClick={this.handleLogout}>
             Logout
@@ -112,7 +111,7 @@ class WeightContainer extends Component {
           </thead>
           <tbody>
             {this.props.records.map((rec) => (
-              <WaistRecord
+              <Record
                 key={rec.date}
                 date={rec.date}
                 cm={rec.cm}
@@ -136,7 +135,13 @@ class WeightContainer extends Component {
             type="number"
             onChange={this.handleInputChange}
             onKeyDown={this.handleKeyDown}
-            value={this.state.newMeasurement}
+            value={
+              this.state.metric ? (
+                this.state.newMeasurement
+              ) : (
+                cmToIn(this.state.newMeasurement)
+              )
+            }
           />
           <button onClick={this.handleSubmit}>
             <svg viewBox="0 0 24 24">
@@ -149,4 +154,4 @@ class WeightContainer extends Component {
   }
 }
 
-export default withRouter(WeightContainer);
+export default withRouter(RecordContainer);

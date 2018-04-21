@@ -10,6 +10,8 @@ To Do
 * Workout tracking/reminders
 * Import/export
 * Rationalize naming
+* Add shoulder records
+* Show previous measurement by default in new entry
 
 Done
 ----

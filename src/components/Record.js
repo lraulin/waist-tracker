@@ -9,7 +9,7 @@ const numField = {
   width: '4em',
 };
 
-class WaistRecord extends Component {
+class Record extends Component {
   state = {
     edit: false,
     newDate: this.props.date,
@@ -86,4 +86,4 @@ class WaistRecord extends Component {
   }
 }
 
-export default WaistRecord;
+export default Record;

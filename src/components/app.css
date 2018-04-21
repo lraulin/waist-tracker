@@ -54,7 +54,7 @@ body {
   margin-top: 7px;
 }
 
-#WeightContainer {
+#RecordContainer {
   position: relative;
   padding-bottom: 50px;
 }
@@ -148,7 +148,7 @@ button.red:focus {
   background-color: #7b1c19;
 }
 
-#WeightContainer #chat-input {
+#RecordContainer #chat-input {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -174,24 +174,24 @@ button.red:focus {
   float: left;
 }
 
-#WeightContainer #chat-input button {
+#RecordContainer #chat-input button {
   background: none;
   border: none;
   width: 15%;
   padding-top: 6px;
 }
 
-#WeightContainer #chat-input button svg {
+#RecordContainer #chat-input button svg {
   width: 24px;
   height: 24px;
   text-align: center;
 }
 
-#WeightContainer #chat-input button:hover {
+#RecordContainer #chat-input button:hover {
   cursor: pointer;
 }
 
-#WeightContainer #chat-input button:hover svg path {
+#RecordContainer #chat-input button:hover svg path {
   fill: #a62824;
 }
 

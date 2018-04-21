@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route, withRouter } from 'react-router-dom';
 import LoginContainer from './LoginContainer';
-import WeightContainer from './WeightContainer';
+import RecordContainer from './RecordContainer';
 import UserContainer from './UserContainer';
 import './app.css';
 import { dateStamp } from '../helpers';
@@ -11,25 +11,33 @@ class App extends Component {
     super(props);
     this.state = {
       user: null,
-      records: [],
-      recordsLoaded: false,
+      waistRecords: [],
+      lastRecord: '',
+      shoulderRecords: [],
+      lastShoulderRecord: '',
+      waistRecordsLoaded: false,
       newMeasurement: '',
       metric: true,
     };
     this.handleSaveRecord = this.handleSaveRecord.bind(this);
   }
 
+  getLastRecord = (waistRecords) => waistRecords[waistRecords.length - 1].cm;
+
   // Listen and update on Firebase change
   fetchData = (userID) => {
     firebase.database().ref(`waist/${userID}`).on('value', (snapshot) => {
-      const records = Object.keys(snapshot.val()).map((key) => {
+      const waistRecords = Object.keys(snapshot.val()).map((key) => {
         const record = snapshot.val()[key];
         record.date = key;
         return record;
       });
-      this.setState({ records });
-      if (!this.state.recordsLoaded) {
-        this.setState({ recordsLoaded: true });
+      this.setState({
+        waistRecords,
+        lastRecord: this.getLastRecord(waistRecords),
+      });
+      if (!this.state.waistRecordsLoaded) {
+        this.setState({ waistRecordsLoaded: true });
       }
     });
   };
@@ -69,10 +77,25 @@ class App extends Component {
           exact
           path="/"
           render={() => (
-            <WeightContainer
+            <RecordContainer
               handleSaveRecord={this.handleSaveRecord}
               userID={this.state.user}
-              records={this.state.records}
+              records={this.state.waistRecords}
+              lastRecord={this.state.lastRecord}
+              whichMeasurement="waist"
+            />
+          )}
+        />
+        <Route
+          exact
+          path="/shoulders"
+          render={() => (
+            <ShoulderContainer
+              handleSaveRecord={this.handleSaveRecord}
+              userID={this.state.user}
+              records={this.state.shoulderRecords}
+              lastRecord={this.state.lastShoulderRecord}
+              whichMeasurement="waist"
             />
           )}
         />
