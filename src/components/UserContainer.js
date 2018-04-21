@@ -41,7 +41,12 @@ export default class UserContainer extends Component {
     const { fHips, fShoulders, fWaist } = venusIndex(this.state.height);
     this.setState({ fShoulders, fHips, fWaist });
     const userId = firebase.auth().currentUser.uid;
-    firebase.database().ref(`settings/${userId}`).set({ height, age, sex });
+    if (this.state.age && this.state.height && this.state.sex) {
+      firebase
+        .database()
+        .ref(`settings/${userId}`)
+        .set({ height, age: this.state.age, sex: this.state.sex });
+    }
   };
 
   handleInput = (e) => {
