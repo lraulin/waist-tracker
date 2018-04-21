@@ -7,8 +7,8 @@ const INCHES_TO_CM = 2.54;
 const CM_TO_INCHES = 1 / 2.54;
 
 // Date format YYYY-MM-DD
-export function dateStamp() {
-  const date = new Date();
+export function dateStamp(date) {
+  date = date || new Date();
   var d = new Date(date),
     month = '' + (d.getMonth() + 1),
     day = '' + d.getDate(),

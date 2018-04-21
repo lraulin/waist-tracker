@@ -21,3 +21,4 @@ Done
 ----
 * Add units/conversion.
   * Buttons at top to select unit.
+* Add date picker to entry

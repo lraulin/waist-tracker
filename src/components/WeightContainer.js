@@ -1,29 +1,35 @@
-import React, { Component } from "react";
-import { Link, Route, withRouter } from "react-router-dom";
-import ReactDOM from "react-dom";
-import Header from "./Header";
-import WaistRecord from "./WaistRecord";
-import Test from "./Test";
-import { inToCm } from "../helpers";
+import React, { Component } from 'react';
+import { Link, Route, withRouter } from 'react-router-dom';
+import ReactDOM from 'react-dom';
+import Header from './Header';
+import WaistRecord from './WaistRecord';
+import Test from './Test';
+import { inToCm, dateStamp } from '../helpers';
 
 const btnUnit = {
-  float: "right",
-  marginTop: "5px"
+  float: 'right',
+  marginTop: '5px',
 };
 
 const btnSpacer = {
   ...btnUnit,
-  marginRight: "4em"
+  marginRight: '4em',
 };
 
 class WeightContainer extends Component {
-  state = { newMeasurement: "", edit: "", testArr: [1, 2, 3], metric: true };
+  state = {
+    newMeasurement: '',
+    edit: '',
+    testArr: [ 1, 2, 3 ],
+    metric: true,
+    date: dateStamp(),
+  };
 
   handleLogout = () => {
     firebase.auth().signOut();
   };
 
-  handleInputChange = e => {
+  handleInputChange = (e) => {
     this.setState({ newMeasurement: e.target.value });
   };
 
@@ -31,12 +37,12 @@ class WeightContainer extends Component {
     const measurement = this.state.metric
       ? this.state.newMeasurement
       : Math.round(inToCm(this.state.newMeasurement));
-    this.props.handleSaveRecord(measurement);
-    this.setState({ newMeasurement: "" });
+    this.props.handleSaveRecord(measurement, this.state.date);
+    this.setState({ newMeasurement: '', date: dateStamp() });
   };
 
-  handleKeyDown = e => {
-    if (e.key === "Enter") {
+  handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
       e.preventDefault();
       this.handleSubmit();
     }
@@ -54,6 +60,10 @@ class WeightContainer extends Component {
     this.props.history.push(`/users/${this.props.userID.uid}`);
   };
 
+  handleChangeDate = (e) => {
+    this.setState({ date: e.target.value });
+  };
+
   render() {
     return (
       <div id="WeightContainer" className="inner-container">
@@ -66,9 +76,11 @@ class WeightContainer extends Component {
           </button>
           <button
             className={
-              this.state.metric
-                ? "btn btn-primary btn-sm active"
-                : "btn btn-secondary btn-sm"
+              this.state.metric ? (
+                'btn btn-primary btn-sm active'
+              ) : (
+                'btn btn-secondary btn-sm'
+              )
             }
             aria-pressed={this.state.metric}
             onClick={this.handleClickCm}
@@ -78,9 +90,11 @@ class WeightContainer extends Component {
           </button>
           <button
             className={
-              !this.state.metric
-                ? "btn btn-primary btn-sm active"
-                : "btn btn-secondary btn-sm"
+              !this.state.metric ? (
+                'btn btn-primary btn-sm active'
+              ) : (
+                'btn btn-secondary btn-sm'
+              )
             }
             aria-pressed={!this.state.metric}
             onClick={this.handleClickIn}
@@ -97,7 +111,7 @@ class WeightContainer extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.props.records.map(rec => (
+            {this.props.records.map((rec) => (
               <WaistRecord
                 key={rec.date}
                 date={rec.date}
@@ -108,10 +122,18 @@ class WeightContainer extends Component {
             ))}
           </tbody>
         </table>
+        {/* NEW ENTRY */}
         <div id="chat-input">
           <h1>Today's Weight</h1>
-          <textarea
-            placeholder="Add your current measurement..."
+          <input
+            id="new-date-input"
+            type="date"
+            value={this.state.date}
+            onChange={this.handleChangeDate}
+          />
+          <input
+            id="new-weight-input"
+            type="number"
             onChange={this.handleInputChange}
             onKeyDown={this.handleKeyDown}
             value={this.state.newMeasurement}
