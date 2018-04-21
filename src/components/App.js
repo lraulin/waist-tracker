@@ -12,17 +12,16 @@ class App extends Component {
     this.state = {
       user: null,
       waistRecords: [],
-      lastRecord: '',
+      lastWaistRecord: '',
       shoulderRecords: [],
       lastShoulderRecord: '',
-      waistRecordsLoaded: false,
       newMeasurement: '',
       metric: true,
     };
     this.handleSaveRecord = this.handleSaveRecord.bind(this);
   }
 
-  getLastRecord = (waistRecords) => waistRecords[waistRecords.length - 1].cm;
+  getLastRecord = (records) => records[records.length - 1].cm;
 
   // Listen and update on Firebase change
   fetchData = (userID) => {
@@ -34,25 +33,39 @@ class App extends Component {
       });
       this.setState({
         waistRecords,
-        lastRecord: this.getLastRecord(waistRecords),
+        lastWaistRecord: this.getLastRecord(waistRecords),
       });
-      if (!this.state.waistRecordsLoaded) {
-        this.setState({ waistRecordsLoaded: true });
-      }
+    });
+
+    firebase.database().ref(`shoulders/${userID}`).on('value', (snapshot) => {
+      const shoulderRecords = Object.keys(snapshot.val()).map((key) => {
+        const record = snapshot.val()[key];
+        record.date = key;
+        return record;
+      });
+      this.setState({
+        shoulderRecords,
+        lastShoulderRecord: this.getLastRecord(shoulderRecords),
+      });
     });
   };
 
-  handleSaveRecord = (waist, date = dateStamp(), oldDate) => {
+  handleSaveRecord = (
+    whichRecord,
+    measurement,
+    date = dateStamp(),
+    oldDate,
+  ) => {
     // Save new record or overwrite old record if dates match
     firebase
       .database()
-      .ref(`waist/${this.state.user.uid}/${date}`)
-      .set({ cm: waist });
+      .ref(`${whichRecord}/${this.state.user.uid}/${date}`)
+      .set({ cm: measurement });
     // Dates don't match; delete old record
     if (oldDate && date != oldDate) {
       firebase
         .database()
-        .ref(`waist/${this.state.user.uid}/${oldDate}`)
+        .ref(`${whichRecord}/${this.state.user.uid}/${oldDate}`)
         .remove();
     }
   };
@@ -81,7 +94,7 @@ class App extends Component {
               handleSaveRecord={this.handleSaveRecord}
               userID={this.state.user}
               records={this.state.waistRecords}
-              lastRecord={this.state.lastRecord}
+              lastRecord={this.state.lastWaistRecord}
               whichMeasurement="waist"
             />
           )}
@@ -90,12 +103,12 @@ class App extends Component {
           exact
           path="/shoulders"
           render={() => (
-            <ShoulderContainer
+            <RecordContainer
               handleSaveRecord={this.handleSaveRecord}
               userID={this.state.user}
               records={this.state.shoulderRecords}
               lastRecord={this.state.lastShoulderRecord}
-              whichMeasurement="waist"
+              whichMeasurement={'shoulders'}
             />
           )}
         />

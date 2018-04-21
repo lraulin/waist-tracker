@@ -28,6 +28,7 @@ class Record extends Component {
         ? this.state.newMeasurement
         : Math.round(inToCm(this.state.newMeasurement));
       this.props.handleSaveRecord(
+        this.whichMeasurement,
         measurement,
         this.state.newDate,
         this.props.date,
@@ -46,7 +47,10 @@ class Record extends Component {
 
   onClickDelete = () => {
     const userId = firebase.auth().currentUser.uid;
-    firebase.database().ref(`waist/${userId}/${this.props.date}`).remove();
+    firebase
+      .database()
+      .ref(`${this.props.whichMeasurement}/${userId}/${this.props.date}`)
+      .remove();
   };
 
   render() {

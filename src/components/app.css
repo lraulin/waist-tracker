@@ -148,7 +148,7 @@ button.red:focus {
   background-color: #7b1c19;
 }
 
-#RecordContainer #chat-input {
+#RecordContainer #data-input {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -157,7 +157,7 @@ button.red:focus {
   background-color: white;
 }
 
-#new-weight-input {
+#new-measurement-input {
   width: 5em;
   border-radius: 10px;
   border: none;
@@ -174,24 +174,24 @@ button.red:focus {
   float: left;
 }
 
-#RecordContainer #chat-input button {
+#RecordContainer #data-input button {
   background: none;
   border: none;
   width: 15%;
   padding-top: 6px;
 }
 
-#RecordContainer #chat-input button svg {
+#RecordContainer #data-input button svg {
   width: 24px;
   height: 24px;
   text-align: center;
 }
 
-#RecordContainer #chat-input button:hover {
+#RecordContainer #data-input button:hover {
   cursor: pointer;
 }
 
-#RecordContainer #chat-input button:hover svg path {
+#RecordContainer #data-input button:hover svg path {
   fill: #a62824;
 }
 

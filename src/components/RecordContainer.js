@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import Header from './Header';
 import Record from './Record';
 import Test from './Test';
-import { inToCm, cmToIn, dateStamp } from '../helpers';
+import { inToCm, cmToIn, dateStamp, capitalize } from '../helpers';
 
 const btnUnit = {
   float: 'right',
@@ -32,7 +32,11 @@ class RecordContainer extends Component {
     const measurement = this.state.metric
       ? this.state.newMeasurement
       : Math.round(inToCm(this.state.newMeasurement));
-    this.props.handleSaveRecord(measurement, this.state.date);
+    this.props.handleSaveRecord(
+      this.props.whichMeasurement,
+      measurement,
+      this.state.date,
+    );
     this.setState({ newMeasurement: '', date: dateStamp() });
   };
 
@@ -59,7 +63,12 @@ class RecordContainer extends Component {
     this.setState({ date: e.target.value });
   };
 
+  componentWillMount() {
+    this.setState({ newMeasurement: this.props.lastRecord });
+  }
+
   componentWillReceiveProps(nextProps) {
+    console.log(nextProps.lastRecord);
     this.setState({ newMeasurement: nextProps.lastRecord });
   }
 
@@ -117,13 +126,14 @@ class RecordContainer extends Component {
                 cm={rec.cm}
                 handleSaveRecord={this.props.handleSaveRecord}
                 metric={this.state.metric}
+                whichMeasurement={this.props.whichMeasurement}
               />
             ))}
           </tbody>
         </table>
         {/* NEW ENTRY */}
-        <div id="chat-input">
-          <h1>Today's Weight</h1>
+        <div id="data-input">
+          <h1>Today's {capitalize(this.props.whichMeasurement)} Measurement</h1>
           <input
             id="new-date-input"
             type="date"
@@ -131,7 +141,7 @@ class RecordContainer extends Component {
             onChange={this.handleChangeDate}
           />
           <input
-            id="new-weight-input"
+            id="new-measurement-input"
             type="number"
             onChange={this.handleInputChange}
             onKeyDown={this.handleKeyDown}

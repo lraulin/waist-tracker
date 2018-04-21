@@ -20,6 +20,10 @@ export function dateStamp(date) {
   return [ year, month, day ].join('-');
 }
 
+export function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.substr(1);
+}
+
 export function inToCm(inches) {
   return Math.round(inches * INCHES_TO_CM);
 }
