@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import Header from './Header';
 import { cmToIn, inToCm, adonisIndex, venusIndex } from '../helpers';
 
@@ -13,33 +13,31 @@ const btnSpacer = {
   marginRight: '4em',
 };
 
-export default class UserContainer extends Component {
+class UserContainer extends Component {
   state = {
     height: '',
     idealWaist: '',
     idealShoulders: '',
     heightEntered: false,
     metric: true,
-    fShoulders: '',
-    fWaist: '',
-    fHips: '',
+    idealHips: '',
     age: '',
     sex: '',
+    userId: '',
+  };
+
+  cmOrIn = (length) => {
+    if (this.state.metric) {
+      return length + ' cm';
+    } else {
+      return cmToIn(length) + ' in';
+    }
   };
 
   handleSubmit = () => {
     const height = this.state.metric
       ? this.state.height
       : inToCm(this.state.height);
-    const { idealShoulders, idealWaist } = adonisIndex(this.state.height);
-    this.setState({
-      idealShoulders,
-      idealWaist,
-      heightEntered: true,
-    });
-    // For Female
-    const { fHips, fShoulders, fWaist } = venusIndex(this.state.height);
-    this.setState({ fShoulders, fHips, fWaist });
     const userId = firebase.auth().currentUser.uid;
     if (this.state.age && this.state.height && this.state.sex) {
       firebase
@@ -47,6 +45,21 @@ export default class UserContainer extends Component {
         .ref(`settings/${userId}`)
         .set({ height, age: this.state.age, sex: this.state.sex });
     }
+    let idealShoulders, idealWaist, idealHips;
+    if (this.state.sex == 'male') {
+      ({ idealShoulders, idealWaist } = adonisIndex(this.state.height));
+    }
+    if (this.state.sex == 'female') {
+      ({ idealHips, idealShoulders, idealWaist } = venusIndex(
+        this.state.height,
+      ));
+    }
+    this.setState({
+      idealShoulders,
+      idealWaist,
+      idealHips,
+      heightEntered: true,
+    });
   };
 
   handleInput = (e) => {
@@ -74,6 +87,36 @@ export default class UserContainer extends Component {
   handleAgeChange = (e) => {
     this.setState({ age: e.target.value });
   };
+
+  componentDidMount() {
+    firebase.auth().onAuthStateChanged((user) => {
+      console.log('authstatechanged');
+      if (user) {
+        console.log('user logged in');
+        this.setState({ userId: user.uid });
+        firebase
+          .database()
+          .ref(`settings/${user.uid}`)
+          .once('value', (snapshot) => {
+            const settings = snapshot.val();
+            const { height, age, sex } = settings;
+            let idealShoulders, idealWaist, idealHips;
+            if (sex == 'male') {
+              ({ idealShoulders, idealWaist } = adonisIndex(height));
+              this.setState({ idealShoulders, idealWaist });
+            }
+            if (sex == 'female') {
+              ({ idealShoulders, idealHips, idealWaist } = venusIndex(height));
+              this.setState({ idealShoulders, idealHips, idealWaist });
+            }
+            this.setState({ height, age, sex, heightEntered: true });
+          });
+      } else {
+        console.log('no user');
+        this.props.history.push('/login');
+      }
+    });
+  }
 
   render() {
     return (
@@ -156,57 +199,14 @@ export default class UserContainer extends Component {
           </div>
         ) : (
           <div id="userData">
-            <p>
-              Height:{' '}
-              {this.state.metric ? (
-                `${this.state.height} cm`
-              ) : (
-                `${cmToIn(this.state.height)} in`
-              )}
-            </p>
-            <h2>Male</h2>
-            <p>
-              Target Waist:{' '}
-              {this.state.metric ? (
-                `${this.state.idealWaist} cm`
-              ) : (
-                `${cmToIn(this.state.idealWaist)} in`
-              )}
-            </p>
-            <p>
-              Target Shoulders:{' '}
-              {this.state.metric ? (
-                `${this.state.idealShoulders} cm`
-              ) : (
-                `${cmToIn(this.state.idealShoulders)} in`
-              )}
-            </p>
-            {/* FEMALE */}
-            <h2>Female</h2>
-            <p>
-              Target Waist:{' '}
-              {this.state.metric ? (
-                `${this.state.fWaist} cm`
-              ) : (
-                `${cmToIn(this.state.fWaist)} in`
-              )}
-            </p>
-            <p>
-              Target Hips:{' '}
-              {this.state.metric ? (
-                `${this.state.fHips} cm`
-              ) : (
-                `${cmToIn(this.state.fHips)} in`
-              )}
-            </p>
-            <p>
-              Target Shoulders:{' '}
-              {this.state.metric ? (
-                `${this.state.fShoulders} cm`
-              ) : (
-                `${cmToIn(this.state.fShoulders)} in`
-              )}
-            </p>
+            <p>Age: {this.state.age}</p>
+            <p>Sex: {this.state.sex}</p>
+            <p>Height: {this.cmOrIn(this.state.height)}</p>
+            <p>Target Waist: {this.cmOrIn(this.state.idealWaist)}</p>
+            <p>Target Shoulders: {this.cmOrIn(this.state.idealShoulders)}</p>
+            {this.sex == 'female' ? (
+              <p>Target Hips: {this.cmOrIn(this.state.idealShoulders)}</p>
+            ) : null}
           </div>
         )}
         <br />
@@ -248,3 +248,5 @@ export default class UserContainer extends Component {
     );
   }
 }
+
+export default withRouter(UserContainer);
