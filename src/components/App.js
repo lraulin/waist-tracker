@@ -3,6 +3,7 @@ import { Route, withRouter } from 'react-router-dom';
 import LoginContainer from './LoginContainer';
 import RecordContainer from './RecordContainer';
 import UserContainer from './UserContainer';
+import NotificationResource from '../resources/NotificationResource';
 import './app.css';
 import { dateStamp } from '../helpers';
 
@@ -72,11 +73,17 @@ class App extends Component {
 
   componentDidMount() {
     console.log('App Mounted');
+    // Push notifications
+    this.notifications = new NotificationResource(
+      firebase.messaging(),
+      firebase.database(),
+    );
     // Check if user is logged in
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.setState({ user });
         this.fetchData(user.uid); // Initialize listener for db changes
+        this.notifications.changeUser(user);
       } else {
         this.props.history.push('/login');
       }
