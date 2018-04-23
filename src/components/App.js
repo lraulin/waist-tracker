@@ -12,6 +12,7 @@ class App extends Component {
     super(props);
     this.state = {
       user: null,
+      userData: {},
       waistRecords: [],
       lastWaistRecord: '',
       shoulderRecords: [],
@@ -26,28 +27,36 @@ class App extends Component {
 
   // Listen and update on Firebase change
   fetchData = (userID) => {
-    firebase.database().ref(`waist/${userID}`).on('value', (snapshot) => {
-      const waistRecords = Object.keys(snapshot.val()).map((key) => {
-        const record = snapshot.val()[key];
-        record.date = key;
-        return record;
-      });
-      this.setState({
-        waistRecords,
-        lastWaistRecord: this.getLastRecord(waistRecords),
-      });
-    });
-
-    firebase.database().ref(`shoulders/${userID}`).on('value', (snapshot) => {
-      const shoulderRecords = Object.keys(snapshot.val()).map((key) => {
-        const record = snapshot.val()[key];
-        record.date = key;
-        return record;
-      });
-      this.setState({
-        shoulderRecords,
-        lastShoulderRecord: this.getLastRecord(shoulderRecords),
-      });
+    firebase.database().ref(`users/${userID}`).on('value', (snapshot) => {
+      const waistData = snapshot.child('measurements').child('waist').val();
+      if (waistData) {
+        const waistRecords = Object.keys(waistData).map((key) => {
+          const record = waistData[key];
+          record.date = key;
+          return record;
+        });
+        this.setState({
+          waistRecords,
+          lastWaistRecord: this.getLastRecord(waistRecords),
+        });
+      }
+      const shoulderData = snapshot
+        .child('measurements')
+        .child('shoulders')
+        .val();
+      if (shoulderData) {
+        const shoulderRecords = Object.keys(shoulderData).map((key) => {
+          const record = shoulderData[key];
+          record.date = key;
+          return record;
+        });
+        this.setState({
+          shoulderRecords,
+          lastShoulderRecord: this.getLastRecord(shoulderRecords),
+        });
+      }
+      const userData = snapshot.child('settings').val();
+      this.setState({ userData });
     });
   };
 
@@ -60,19 +69,18 @@ class App extends Component {
     // Save new record or overwrite old record if dates match
     firebase
       .database()
-      .ref(`${whichRecord}/${this.state.user.uid}/${date}`)
+      .ref(`users/${this.state.user.uid}/measurements/${whichRecord}/${date}`)
       .set({ cm: measurement });
     // Dates don't match; delete old record
     if (oldDate && date != oldDate) {
       firebase
         .database()
-        .ref(`${whichRecord}/${this.state.user.uid}/${oldDate}`)
+        .ref(`measurements/${whichRecord}/${this.state.user.uid}/${oldDate}`)
         .remove();
     }
   };
 
   componentDidMount() {
-    console.log('App Mounted');
     // Push notifications
     this.notifications = new NotificationResource(
       firebase.messaging(),
@@ -126,6 +134,7 @@ class App extends Component {
             <UserContainer
               messagesLoaded={this.state.messagesLoaded}
               user={match.params.id}
+              userData={this.state.userData}
               lastWaistRecord={this.state.lastWaistRecord}
               lastShoulderRecord={this.state.lastShoulderRecord}
             />

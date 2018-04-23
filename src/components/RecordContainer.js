@@ -63,12 +63,11 @@ class RecordContainer extends Component {
     this.setState({ date: e.target.value });
   };
 
-  componentDidMount() {
-    console.log('RecordContainer Mounted');
-  }
+  handleLogout = () => {
+    firebase.auth().signOut();
+  };
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps.lastRecord);
     this.setState({ newMeasurement: nextProps.lastRecord });
   }
 

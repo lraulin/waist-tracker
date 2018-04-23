@@ -18,12 +18,13 @@ class UserContainer extends Component {
     height: '',
     idealWaist: '',
     idealShoulders: '',
-    heightEntered: false,
     metric: true,
     idealHips: '',
     age: '',
     sex: '',
     userId: '',
+    validationError: '',
+    edit: false,
   };
 
   cmOrIn = (length) => {
@@ -34,32 +35,57 @@ class UserContainer extends Component {
     }
   };
 
-  handleSubmit = () => {
-    const height = this.state.metric
-      ? this.state.height
-      : inToCm(this.state.height);
-    const userId = firebase.auth().currentUser.uid;
-    if (this.state.age && this.state.height && this.state.sex) {
-      firebase
-        .database()
-        .ref(`settings/${userId}`)
-        .set({ height, age: this.state.age, sex: this.state.sex });
-    }
+  loadData(settings) {
+    const { height, age, sex } = settings;
     let idealShoulders, idealWaist, idealHips;
-    if (this.state.sex == 'male') {
-      ({ idealShoulders, idealWaist } = adonisIndex(this.state.height));
+    if (sex == 'male') {
+      ({ idealShoulders, idealWaist } = adonisIndex(height));
+      this.setState({ idealShoulders, idealWaist });
     }
-    if (this.state.sex == 'female') {
-      ({ idealHips, idealShoulders, idealWaist } = venusIndex(
-        this.state.height,
-      ));
+    if (sex == 'female') {
+      ({ idealShoulders, idealHips, idealWaist } = venusIndex(height));
+      this.setState({ idealShoulders, idealHips, idealWaist });
     }
-    this.setState({
-      idealShoulders,
-      idealWaist,
-      idealHips,
-      heightEntered: true,
-    });
+    this.setState({ height, age, sex });
+    if (height && age && sex) {
+      this.setState({ edit: false });
+    } else {
+      this.setState({ edit: true });
+    }
+  }
+
+  handleSubmit = () => {
+    if (this.state.age && this.state.sex && this.state.height) {
+      const height = this.state.metric
+        ? this.state.height
+        : inToCm(this.state.height);
+      const userId = firebase.auth().currentUser.uid;
+      if (this.state.age && this.state.height && this.state.sex) {
+        firebase
+          .database()
+          .ref(`settings/${userId}`)
+          .set({ height, age: this.state.age, sex: this.state.sex });
+      }
+      let idealShoulders, idealWaist, idealHips;
+      if (this.state.sex == 'male') {
+        ({ idealShoulders, idealWaist } = adonisIndex(this.state.height));
+      }
+      if (this.state.sex == 'female') {
+        ({ idealHips, idealShoulders, idealWaist } = venusIndex(
+          this.state.height,
+        ));
+      }
+      this.setState({
+        idealShoulders,
+        idealWaist,
+        idealHips,
+        edit: false,
+        validationError: false,
+      });
+    } else {
+      this.setState({ validationError: true });
+      console.log('Invalid data! Must complete all fields.');
+    }
   };
 
   handleInput = (e) => {
@@ -80,6 +106,18 @@ class UserContainer extends Component {
     this.setState({ metric: false });
   };
 
+  handleClickEdit = () => {
+    if (this.state.edit) {
+      this.setState({ edit: false });
+    } else {
+      this.setState({ edit: true });
+    }
+  };
+
+  handleHeightChange = (e) => {
+    this.setState({ height: e.target.value });
+  };
+
   handleSexChange = (e) => {
     this.setState({ sex: e.target.value });
   };
@@ -89,39 +127,27 @@ class UserContainer extends Component {
   };
 
   componentDidMount() {
-    firebase.auth().onAuthStateChanged((user) => {
-      console.log('authstatechanged');
-      if (user) {
-        console.log('user logged in');
-        this.setState({ userId: user });
-        firebase
-          .database()
-          .ref(`settings/${user.uid}`)
-          .once('value', (snapshot) => {
-            const settings = snapshot.val();
-            const { height, age, sex } = settings;
-            let idealShoulders, idealWaist, idealHips;
-            if (sex == 'male') {
-              ({ idealShoulders, idealWaist } = adonisIndex(height));
-              this.setState({ idealShoulders, idealWaist });
-            }
-            if (sex == 'female') {
-              ({ idealShoulders, idealHips, idealWaist } = venusIndex(height));
-              this.setState({ idealShoulders, idealHips, idealWaist });
-            }
-            this.setState({ height, age, sex, heightEntered: true });
-          });
-      } else {
-        console.log('no user');
-        this.props.history.push('/login');
-      }
-    });
+    this.loadData(this.props.userData);
+    this.setState({ edit: false });
+  }
+
+  componentWillReceiveProps(newProps) {
+    this.loadData(newProps.userData);
   }
 
   render() {
+    const warningMsg = () => {
+      if (valid === false) {
+        <p>All fields must be filled.</p>;
+        <br />;
+      }
+    };
+
     return (
       <div id="UserContainer" className="inner-container">
+        {/**********/}
         {/* HEADER */}
+        {/**********/}
         <button
           className={
             this.state.metric ? (
@@ -153,20 +179,35 @@ class UserContainer extends Component {
         <Link to="/">
           <button className="red">Back To Records</button>
         </Link>
+        <button className="red" onClick={this.handleClickEdit}>
+          edit
+        </button>
         <h1>User</h1>
         {/*********/}
         {/* BODY  */}
         {/*********/}
-        {!this.state.heightEntered ? (
+        {this.state.edit ? (
           <div id="enterUserInfo">
             <p>Enter your height in {this.state.metric ? 'cm' : 'inches'}.</p>
             <input
               type="number"
               onInput={this.handleInput}
               onKeyDown={this.handleKeyDown}
+              min={0}
+              max={250}
+              value={this.state.height}
+              onChange={this.handleHeightChange}
             />
             <p>Age</p>
-            <input id="ageInput" type="number" onInput={this.handleAgeChange} />
+            <input
+              id="ageInput"
+              type="number"
+              onInput={this.handleAgeChange}
+              min={0}
+              max={100}
+              value={this.state.age}
+              onChange={this.handleAgeChange}
+            />
             <p>Sex</p>
             <form>
               <label htmlFor="sexMale">
@@ -180,7 +221,6 @@ class UserContainer extends Component {
                 />
                 Male
               </label>
-
               <label htmlFor="sexFemale">
                 <input
                   id="sexFemale"
@@ -232,6 +272,15 @@ class UserContainer extends Component {
           </div>
         )}
         <br />
+        {this.state.validationError ? (
+          <div id="validationErrorMsg">
+            <p>All fields must be filled.</p>
+            <br />
+          </div>
+        ) : null}
+        {/*********/}
+        {/* INFO  */}
+        {/*********/}
         <section id="explaination" style={{ fontSize: 11 }}>
           <p style={{ margin: '1em' }}>
             The idea here is to have a goal to aim for that is aesthetically

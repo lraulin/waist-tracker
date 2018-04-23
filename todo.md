@@ -11,6 +11,7 @@
 * Rationalize naming
 * Show previous measurement by default in new entry
 * Fix icon path on user profile
+* Refactor: make shoulders and waist children of 'measurements' node
 
 ##Done
 

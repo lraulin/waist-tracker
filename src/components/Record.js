@@ -49,7 +49,7 @@ class Record extends Component {
     const userId = firebase.auth().currentUser.uid;
     firebase
       .database()
-      .ref(`${this.props.whichMeasurement}/${userId}/${this.props.date}`)
+      .ref(`users/${userId}/${this.props.whichMeasurement}/${this.props.date}`)
       .remove();
   };
 
