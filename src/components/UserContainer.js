@@ -93,7 +93,7 @@ class UserContainer extends Component {
       console.log('authstatechanged');
       if (user) {
         console.log('user logged in');
-        this.setState({ userId: user.uid });
+        this.setState({ userId: user });
         firebase
           .database()
           .ref(`settings/${user.uid}`)
@@ -154,9 +154,9 @@ class UserContainer extends Component {
           <button className="red">Back To Records</button>
         </Link>
         <h1>User</h1>
-        {/* ***** */}
+        {/*********/}
         {/* BODY  */}
-        {/* ***** */}
+        {/*********/}
         {!this.state.heightEntered ? (
           <div id="enterUserInfo">
             <p>Enter your height in {this.state.metric ? 'cm' : 'inches'}.</p>
@@ -202,8 +202,30 @@ class UserContainer extends Component {
             <p>Age: {this.state.age}</p>
             <p>Sex: {this.state.sex}</p>
             <p>Height: {this.cmOrIn(this.state.height)}</p>
+            <br />
+            <p>Current Waist: {this.cmOrIn(this.props.lastWaistRecord)}</p>
             <p>Target Waist: {this.cmOrIn(this.state.idealWaist)}</p>
+            <p>
+              Goal: Lose{' '}
+              {this.cmOrIn(this.props.lastWaistRecord - this.state.idealWaist)}
+            </p>
+            <br />
+            <p>
+              Current Shoulders: {this.cmOrIn(this.props.lastShoulderRecord)}
+            </p>
             <p>Target Shoulders: {this.cmOrIn(this.state.idealShoulders)}</p>
+            <p>
+              Goal: Gain{' '}
+              {this.cmOrIn(
+                this.state.idealShoulders - this.props.lastShoulderRecord,
+              )}
+            </p>
+            <br />
+            <p>
+              Current Adonis Index:{' '}
+              {(this.props.lastShoulderRecord /
+                this.props.lastWaistRecord).toPrecision(3)}{' '}
+            </p>
             {this.sex == 'female' ? (
               <p>Target Hips: {this.cmOrIn(this.state.idealShoulders)}</p>
             ) : null}
@@ -235,7 +257,8 @@ class UserContainer extends Component {
             The male proportions describe the classic V-shape, based on the{' '}
             <a href="https://en.wikipedia.org/wiki/Golden_ratio">
               Golden Ratio
-            </a>.
+            </a>, and can be a useful tool to help decide how much you need to
+            focus on losing weight vs gaining muscle.
           </p>
           <p style={{ margin: '1em' }}>
             For more, see{' '}

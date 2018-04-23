@@ -71,6 +71,7 @@ class App extends Component {
   };
 
   componentDidMount() {
+    console.log('App Mounted');
     // Check if user is logged in
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
@@ -92,7 +93,7 @@ class App extends Component {
           render={() => (
             <RecordContainer
               handleSaveRecord={this.handleSaveRecord}
-              userID={this.state.user}
+              user={this.state.user}
               records={this.state.waistRecords}
               lastRecord={this.state.lastWaistRecord}
               whichMeasurement="waist"
@@ -105,7 +106,7 @@ class App extends Component {
           render={() => (
             <RecordContainer
               handleSaveRecord={this.handleSaveRecord}
-              userID={this.state.user}
+              user={this.state.user}
               records={this.state.shoulderRecords}
               lastRecord={this.state.lastShoulderRecord}
               whichMeasurement={'shoulders'}
@@ -117,7 +118,9 @@ class App extends Component {
           render={({ history, match }) => (
             <UserContainer
               messagesLoaded={this.state.messagesLoaded}
-              userID={match.params.id}
+              user={match.params.id}
+              lastWaistRecord={this.state.lastWaistRecord}
+              lastShoulderRecord={this.state.lastShoulderRecord}
             />
           )}
         />

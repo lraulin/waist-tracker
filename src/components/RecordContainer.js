@@ -56,15 +56,15 @@ class RecordContainer extends Component {
   };
 
   handleClickProfile = () => {
-    this.props.history.push(`/users/${this.props.userID.uid}`);
+    this.props.history.push(`/users/${this.props.user.uid}`);
   };
 
   handleChangeDate = (e) => {
     this.setState({ date: e.target.value });
   };
 
-  componentWillMount() {
-    this.setState({ newMeasurement: this.props.lastRecord });
+  componentDidMount() {
+    console.log('RecordContainer Mounted');
   }
 
   componentWillReceiveProps(nextProps) {
@@ -75,7 +75,7 @@ class RecordContainer extends Component {
   render() {
     return (
       <div id="RecordContainer" className="inner-container">
-        <Header>
+        <Header user={this.props.user}>
           <button className="red" onClick={this.handleLogout}>
             Logout
           </button>
