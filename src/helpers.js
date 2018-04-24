@@ -5,6 +5,7 @@ const FEMALE_WAIST_TO_HEIGHT_RATIO = 0.38;
 const FEMALE_WAIST_TO_HIP_RATIO = 0.7;
 const INCHES_TO_CM = 2.54;
 const CM_TO_INCHES = 1 / 2.54;
+const MILISECONDS_PER_DAY = 86400000;
 
 // Date format YYYY-MM-DD
 export function dateStamp(date) {
@@ -43,4 +44,11 @@ export function venusIndex(height) {
   const fShoulders = Math.round(height * FEMALE_SHOULDER_TO_HEIGHT_RATIO);
   const fHips = Math.round(fWaist / FEMALE_WAIST_TO_HIP_RATIO);
   return { fHips, fShoulders, fWaist };
+}
+
+export function daysSince(oldDate) {
+  const today = new Date(dateStamp());
+  oldDate = new Date(oldDate);
+  const elapsedTime = today - oldDate;
+  return Math.round(elapsedTime / MILISECONDS_PER_DAY);
 }

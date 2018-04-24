@@ -1,0 +1,30 @@
+{
+  "name": "Waist & Shoulder Girth Tracker",
+  "short_name": "WaistTracker",
+  "icons": [
+    {
+      "src": "/assets/icon.png",
+      "sizes": "192/192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icon-256.png",
+      "sizes": "256/256",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icon-384.png",
+      "sizes": "384/384",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512/512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/?utm_source=homescreen",
+  "background_color": "#e05a47",
+  "theme_color": "#e05a47",
+  "display": "standalone"
+}

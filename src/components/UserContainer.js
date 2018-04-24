@@ -84,7 +84,6 @@ class UserContainer extends Component {
       });
     } else {
       this.setState({ validationError: true });
-      console.log('Invalid data! Must complete all fields.');
     }
   };
 

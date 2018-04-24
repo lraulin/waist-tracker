@@ -7,10 +7,6 @@ class Header extends Component {
     this.props.history.push(e.target.value);
   };
 
-  componentDidMount() {
-    console.log('Header Mounted');
-  }
-
   render() {
     return (
       <div id="Header">

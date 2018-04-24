@@ -4,15 +4,15 @@ import Header from './Header';
 class LoginContainer extends Component {
   state = { email: '', password: '', error: '' };
 
-  handleEmailChange = event => {
+  handleEmailChange = (event) => {
     this.setState({ email: event.target.value });
   };
 
-  handlePasswordChange = event => {
+  handlePasswordChange = (event) => {
     this.setState({ password: event.target.value });
   };
 
-  handleSubmit = event => {
+  handleSubmit = (event) => {
     event.preventDefault();
     this.setState({ error: '' });
     if (this.state.email && this.state.password) {
@@ -23,17 +23,17 @@ class LoginContainer extends Component {
   };
 
   onLogin() {
-    this.props.history.push("/");
+    this.props.history.push('/');
   }
 
   login() {
     firebase
       .auth()
       .signInWithEmailAndPassword(this.state.email, this.state.password)
-      .then(res => {
+      .then((res) => {
         this.onLogin();
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.code === 'auth/user-not-found') {
           this.signup();
         } else {
@@ -46,11 +46,10 @@ class LoginContainer extends Component {
     firebase
       .auth()
       .createUserWithEmailAndPassword(this.state.email, this.state.password)
-      .then(res => {
+      .then((res) => {
         this.onLogin();
       })
-      .catch(error => {
-        console.log(error);
+      .catch((error) => {
         this.setState({ error: 'Error signing up.' });
       });
   }
@@ -73,9 +72,7 @@ class LoginContainer extends Component {
             value={this.state.password}
             placeholder="Your password"
           />
-          <p className="error">
-            {this.state.error}
-          </p>
+          <p className="error">{this.state.error}</p>
           <button className="red light" type="submit">
             Login
           </button>

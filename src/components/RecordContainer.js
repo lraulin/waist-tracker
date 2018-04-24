@@ -130,6 +130,15 @@ class RecordContainer extends Component {
             ))}
           </tbody>
         </table>
+        {/* TEST MESSAGE */}
+        <div id="testNotification">
+          <button
+            className="btn btn-warning"
+            onClick={this.props.sendTestMessage}
+          >
+            Test Notification
+          </button>
+        </div>
         {/* NEW ENTRY */}
         <div id="data-input">
           <h1>Today's {capitalize(this.props.whichMeasurement)} Measurement</h1>

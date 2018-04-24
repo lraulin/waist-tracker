@@ -10,16 +10,16 @@ export default class NotificationResource {
       this.messaging
         .requestPermission()
         .then((res) => {
-          console.log('Permission granted');
+          //
         })
         .catch((err) => {
-          console.log('no access', err);
+          //
         });
     } catch (err) {
-      console.log('No notification support.', err);
+      //
     }
     this.messaging.getToken().then((res) => {
-      console.log(res);
+      //
     });
     this.setupTokenRefresh();
     this.database.ref('/fcmTokens').on('value', (snapshot) => {

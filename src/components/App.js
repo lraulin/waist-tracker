@@ -80,6 +80,22 @@ class App extends Component {
     }
   };
 
+  sendTestMessage = () => {
+    const data = {
+      msg: 'Testing! You have received a notification!',
+      user_id: this.state.user.uid,
+      timestamp: Date.now(),
+    };
+    firebase.database().ref('messages/').push(data);
+    if (this.deferredPrompt) {
+      this.deferredPrompt.prompt();
+      this.deferredPrompt.userChoice.then((choice) => {
+        console.log(choice);
+      });
+      this.deferredPrompt = null;
+    }
+  };
+
   componentDidMount() {
     // Push notifications
     this.notifications = new NotificationResource(
@@ -112,6 +128,7 @@ class App extends Component {
               records={this.state.waistRecords}
               lastRecord={this.state.lastWaistRecord}
               whichMeasurement="waist"
+              sendTestMessage={this.sendTestMessage}
             />
           )}
         />
