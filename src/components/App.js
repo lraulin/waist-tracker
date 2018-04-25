@@ -18,7 +18,7 @@ class App extends Component {
       shoulderRecords: [],
       lastShoulderRecord: '',
       newMeasurement: '',
-      metric: true,
+      metric: true
     };
     this.handleSaveRecord = this.handleSaveRecord.bind(this);
   }
@@ -37,7 +37,7 @@ class App extends Component {
         });
         this.setState({
           waistRecords,
-          lastWaistRecord: this.getLastRecord(waistRecords),
+          lastWaistRecord: this.getLastRecord(waistRecords)
         });
       }
       const shoulderData = snapshot
@@ -52,7 +52,7 @@ class App extends Component {
         });
         this.setState({
           shoulderRecords,
-          lastShoulderRecord: this.getLastRecord(shoulderRecords),
+          lastShoulderRecord: this.getLastRecord(shoulderRecords)
         });
       }
       const userData = snapshot.child('settings').val();
@@ -64,7 +64,7 @@ class App extends Component {
     whichRecord,
     measurement,
     date = dateStamp(),
-    oldDate,
+    oldDate
   ) => {
     // Save new record or overwrite old record if dates match
     firebase
@@ -84,7 +84,7 @@ class App extends Component {
     const data = {
       msg: 'Testing! You have received a notification!',
       user_id: this.state.user.uid,
-      timestamp: Date.now(),
+      timestamp: Date.now()
     };
     firebase.database().ref('messages/').push(data);
     if (this.deferredPrompt) {
@@ -96,11 +96,19 @@ class App extends Component {
     }
   };
 
+  listenForInstallBanner = () => {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      console.log('beforeinstallprompt Event fired');
+      e.preventDefault();
+      this.deferredPrompt = e;
+    });
+  };
+
   componentDidMount() {
     // Push notifications
     this.notifications = new NotificationResource(
       firebase.messaging(),
-      firebase.database(),
+      firebase.database()
     );
     // Check if user is logged in
     firebase.auth().onAuthStateChanged((user) => {
@@ -112,6 +120,7 @@ class App extends Component {
         this.props.history.push('/login');
       }
     });
+    this.listenForInstallBanner();
   }
 
   render() {
