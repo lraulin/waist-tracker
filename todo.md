@@ -3,15 +3,14 @@
 ##Next
 
 * Change *CSS* for new entry.
-* Replace *image* file.
-* Push notifications
 * Workout tracking/reminders
 * *Import*/*export*
   * Finish export
+* Fix icon path on user profile
 * Rationalize naming
   * Change app name on Firebase
-* Fix icon path on user profile
 * Make app installable with manifest
+* Add legal page; attribute icon from Noun Project
 
 ##Done
 
@@ -23,6 +22,8 @@
 * Retrieve user info from Firebase
 * Show previous measurement by default in new entry
 * Refactor: make shoulders and waist children of 'measurements' node
+* Replace *image* file.
+* Push notifications
 
 ##Next Steps
 1. Finish book and get everything to work--proof of concept

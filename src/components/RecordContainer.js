@@ -8,12 +8,12 @@ import { inToCm, cmToIn, dateStamp, capitalize } from '../helpers';
 
 const btnUnit = {
   float: 'right',
-  marginTop: '5px',
+  marginTop: '5px'
 };
 
 const btnSpacer = {
   ...btnUnit,
-  marginRight: '4em',
+  marginRight: '4em'
 };
 
 class RecordContainer extends Component {
@@ -21,10 +21,10 @@ class RecordContainer extends Component {
     newMeasurement: '',
     edit: '',
     metric: true,
-    date: dateStamp(),
+    date: dateStamp()
   };
 
-  handleInputChange = (e) => {
+  handleInputChange = e => {
     this.setState({ newMeasurement: e.target.value });
   };
 
@@ -35,12 +35,12 @@ class RecordContainer extends Component {
     this.props.handleSaveRecord(
       this.props.whichMeasurement,
       measurement,
-      this.state.date,
+      this.state.date
     );
-    this.setState({ newMeasurement: '', date: dateStamp() });
+    this.setState({ date: dateStamp() });
   };
 
-  handleKeyDown = (e) => {
+  handleKeyDown = e => {
     if (e.key === 'Enter') {
       e.preventDefault();
       this.handleSubmit();
@@ -59,7 +59,7 @@ class RecordContainer extends Component {
     this.props.history.push(`/users/${this.props.user.uid}`);
   };
 
-  handleChangeDate = (e) => {
+  handleChangeDate = e => {
     this.setState({ date: e.target.value });
   };
 
@@ -83,11 +83,9 @@ class RecordContainer extends Component {
           </button>
           <button
             className={
-              this.state.metric ? (
-                'btn btn-primary btn-sm active'
-              ) : (
-                'btn btn-secondary btn-sm'
-              )
+              this.state.metric
+                ? 'btn btn-primary btn-sm active'
+                : 'btn btn-secondary btn-sm'
             }
             aria-pressed={this.state.metric}
             onClick={this.handleClickCm}
@@ -97,11 +95,9 @@ class RecordContainer extends Component {
           </button>
           <button
             className={
-              !this.state.metric ? (
-                'btn btn-primary btn-sm active'
-              ) : (
-                'btn btn-secondary btn-sm'
-              )
+              !this.state.metric
+                ? 'btn btn-primary btn-sm active'
+                : 'btn btn-secondary btn-sm'
             }
             aria-pressed={!this.state.metric}
             onClick={this.handleClickIn}
@@ -118,7 +114,7 @@ class RecordContainer extends Component {
             </tr>
           </thead>
           <tbody>
-            {this.props.records.map((rec) => (
+            {this.props.records.map(rec => (
               <Record
                 key={rec.date}
                 date={rec.date}
@@ -154,11 +150,9 @@ class RecordContainer extends Component {
             onChange={this.handleInputChange}
             onKeyDown={this.handleKeyDown}
             value={
-              this.state.metric ? (
-                this.state.newMeasurement
-              ) : (
-                cmToIn(this.state.newMeasurement)
-              )
+              this.state.metric
+                ? this.state.newMeasurement
+                : cmToIn(this.state.newMeasurement)
             }
           />
           <button onClick={this.handleSubmit}>

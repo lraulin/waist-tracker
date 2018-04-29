@@ -3,14 +3,14 @@ import { withRouter } from 'react-router-dom';
 import { captialize } from '../helpers';
 
 class Header extends Component {
-  handleChange = (e) => {
+  handleChange = e => {
     this.props.history.push(e.target.value);
   };
 
   render() {
     return (
       <div id="Header">
-        <img src="/assets/icon.png" alt="logo" />
+        <img src="/assets/noun_1699454_cc.svg " alt="logo" />
         <h1>Fitness Tracker</h1>
         {this.props.location ? (
           <select
