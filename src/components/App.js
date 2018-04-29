@@ -1,11 +1,26 @@
 import React, { Component } from 'react';
 import { Route, withRouter } from 'react-router-dom';
-import LoginContainer from './LoginContainer';
-import RecordContainer from './RecordContainer';
-import UserContainer from './UserContainer';
+import AsyncComponent from './AsyncComponent';
 import NotificationResource from '../resources/NotificationResource';
-import './app.css';
 import { dateStamp } from '../helpers';
+import './app.css';
+
+// Load function for asyncComponent; must return a promise
+const loadLogin = () => {
+  return import('./LoginContainer').then(module => module.default);
+};
+
+const loadRecord = () => {
+  return import('./RecordContainer').then(module => module.default);
+};
+
+const loadUser = () => {
+  return import('./UserContainer').then(module => module.default);
+};
+
+const LoginContainer = AsyncComponent(loadLogin);
+const UserContainer = AsyncComponent(loadUser);
+const RecordContainer = AsyncComponent(loadRecord);
 
 class App extends Component {
   constructor(props) {
@@ -23,41 +38,47 @@ class App extends Component {
     this.handleSaveRecord = this.handleSaveRecord.bind(this);
   }
 
-  getLastRecord = (records) => records[records.length - 1].cm;
+  getLastRecord = records => records[records.length - 1].cm;
 
   // Listen and update on Firebase change
-  fetchData = (userID) => {
-    firebase.database().ref(`users/${userID}`).on('value', (snapshot) => {
-      const waistData = snapshot.child('measurements').child('waist').val();
-      if (waistData) {
-        const waistRecords = Object.keys(waistData).map((key) => {
-          const record = waistData[key];
-          record.date = key;
-          return record;
-        });
-        this.setState({
-          waistRecords,
-          lastWaistRecord: this.getLastRecord(waistRecords)
-        });
-      }
-      const shoulderData = snapshot
-        .child('measurements')
-        .child('shoulders')
-        .val();
-      if (shoulderData) {
-        const shoulderRecords = Object.keys(shoulderData).map((key) => {
-          const record = shoulderData[key];
-          record.date = key;
-          return record;
-        });
-        this.setState({
-          shoulderRecords,
-          lastShoulderRecord: this.getLastRecord(shoulderRecords)
-        });
-      }
-      const userData = snapshot.child('settings').val();
-      this.setState({ userData });
-    });
+  fetchData = userID => {
+    firebase
+      .database()
+      .ref(`users/${userID}`)
+      .on('value', snapshot => {
+        const waistData = snapshot
+          .child('measurements')
+          .child('waist')
+          .val();
+        if (waistData) {
+          const waistRecords = Object.keys(waistData).map(key => {
+            const record = waistData[key];
+            record.date = key;
+            return record;
+          });
+          this.setState({
+            waistRecords,
+            lastWaistRecord: this.getLastRecord(waistRecords)
+          });
+        }
+        const shoulderData = snapshot
+          .child('measurements')
+          .child('shoulders')
+          .val();
+        if (shoulderData) {
+          const shoulderRecords = Object.keys(shoulderData).map(key => {
+            const record = shoulderData[key];
+            record.date = key;
+            return record;
+          });
+          this.setState({
+            shoulderRecords,
+            lastShoulderRecord: this.getLastRecord(shoulderRecords)
+          });
+        }
+        const userData = snapshot.child('settings').val();
+        this.setState({ userData });
+      });
   };
 
   handleSaveRecord = (
@@ -86,10 +107,13 @@ class App extends Component {
       user_id: this.state.user.uid,
       timestamp: Date.now()
     };
-    firebase.database().ref('messages/').push(data);
+    firebase
+      .database()
+      .ref('messages/')
+      .push(data);
     if (this.deferredPrompt) {
       this.deferredPrompt.prompt();
-      this.deferredPrompt.userChoice.then((choice) => {
+      this.deferredPrompt.userChoice.then(choice => {
         console.log(choice);
       });
       this.deferredPrompt = null;
@@ -97,7 +121,7 @@ class App extends Component {
   };
 
   listenForInstallBanner = () => {
-    window.addEventListener('beforeinstallprompt', (e) => {
+    window.addEventListener('beforeinstallprompt', e => {
       console.log('beforeinstallprompt Event fired');
       e.preventDefault();
       this.deferredPrompt = e;
@@ -111,7 +135,7 @@ class App extends Component {
       firebase.database()
     );
     // Check if user is logged in
-    firebase.auth().onAuthStateChanged((user) => {
+    firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.setState({ user });
         this.fetchData(user.uid); // Initialize listener for db changes

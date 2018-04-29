@@ -6,12 +6,12 @@ module.exports = {
     'react-hot-loader/patch',
     'webpack-dev-server/client?http://localhost:8080',
     'webpack/hot/only-dev-server',
-    __dirname + '/src/index.js',
+    __dirname + '/src/index.js'
   ],
   output: {
     path: __dirname + '/public',
     filename: 'bundle.js',
-    publicPath: '/',
+    publicPath: '/'
   },
   module: {
     loaders: [
@@ -20,39 +20,39 @@ module.exports = {
         exclude: /node_modules/,
         loader: 'babel-loader',
         query: {
-          presets: [ 'env', 'react' ],
+          presets: ['env', 'react', 'stage-2'],
           plugins: [
             'react-hot-loader/babel',
             'transform-class-properties',
             'transform-object-rest-spread',
-            'transform-es2015-destructuring',
-          ],
-        },
+            'transform-es2015-destructuring'
+          ]
+        }
       },
       {
         test: /\.css$/,
         use: [
           {
-            loader: 'style-loader',
+            loader: 'style-loader'
           },
           {
-            loader: 'css-loader',
-          },
-        ],
-      },
-    ],
+            loader: 'css-loader'
+          }
+        ]
+      }
+    ]
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
       inject: true,
-      template: __dirname + '/public/index.html',
-    }),
+      template: __dirname + '/public/index.html'
+    })
   ],
   devServer: {
     contentBase: './public',
     historyApiFallback: true,
     inline: true,
-    hot: true,
-  },
+    hot: true
+  }
 };

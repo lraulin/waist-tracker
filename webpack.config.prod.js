@@ -6,8 +6,9 @@ module.exports = {
   entry: __dirname + '/src/index.js',
   output: {
     path: __dirname + '/build',
-    filename: 'bundle.js',
-    publicPath: './',
+    filename: 'static/js/[name].[hash:8].js',
+    chunkFilename: 'static/js/[name].[hash:8].chunk.js',
+    publicPath: './'
   },
   module: {
     loaders: [
@@ -16,40 +17,40 @@ module.exports = {
         exclude: /node_modules/,
         loader: 'babel-loader',
         query: {
-          presets: [ 'env', 'react' ],
+          presets: ['env', 'react', 'stage-2'],
           plugins: [
             'react-hot-loader/babel',
             'transform-class-properties',
             'transform-object-rest-spread',
-            'transform-es2015-destructuring',
-          ],
-        },
+            'transform-es2015-destructuring'
+          ]
+        }
       },
       {
         test: /\.css$/,
         use: [
           {
-            loader: 'style-loader',
+            loader: 'style-loader'
           },
           {
-            loader: 'css-loader',
-          },
-        ],
+            loader: 'css-loader'
+          }
+        ]
       },
       {
-        exclude: [ /\.html$/, /\.(js|jsx)$/, /\.css$/, /\.json$/ ],
+        exclude: [/\.html$/, /\.(js|jsx)$/, /\.css$/, /\.json$/],
         loader: 'file-loader',
         options: {
-          name: 'static/media/[name].[ext]',
-        },
-      },
-    ],
+          name: 'static/media/[name].[ext]'
+        }
+      }
+    ]
   },
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: JSON.stringify('production'),
-      },
+        NODE_ENV: JSON.stringify('production')
+      }
     }),
     new HtmlWebpackPlugin({
       inject: true,
@@ -64,19 +65,19 @@ module.exports = {
         keepClosingSlash: true,
         minifyJS: true,
         minifyCSS: true,
-        minifyURLs: true,
-      },
+        minifyURLs: true
+      }
     }),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false,
-        reduce_vars: false,
+        reduce_vars: false
       },
       output: {
-        comments: false,
+        comments: false
       },
-      sourceMap: true,
+      sourceMap: true
     }),
-    new ManifestPlugin({ fileName: 'asset-manifest.json' }),
-  ],
+    new ManifestPlugin({ fileName: 'asset-manifest.json' })
+  ]
 };
