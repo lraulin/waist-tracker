@@ -10,7 +10,7 @@ class Header extends Component {
   render() {
     return (
       <div id="Header">
-        <img src="/assets/noun_1699454_cc.svg " alt="logo" />
+        <img src="/assets/muscle_man.svg " alt="logo" />
         <h1>Fitness Tracker</h1>
         {this.props.location ? (
           <select

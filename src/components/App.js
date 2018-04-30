@@ -145,6 +145,10 @@ class App extends Component {
       }
     });
     this.listenForInstallBanner();
+    // Call loading methods to download other routes in background
+    loadRecord();
+    loadLogin();
+    loadUser();
   }
 
   render() {
