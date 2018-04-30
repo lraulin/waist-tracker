@@ -11,6 +11,11 @@
   * Change app name on Firebase
 * Make app installable with manifest
 * Add legal page; attribute icon from Noun Project
+* Get 100 score from Lighthouse
+  * Why does it say service worker isn't registered?
+  * Does not respond with a 200 when offline
+  * Address bar does not match brand colors
+  * Missing icon sizes
 
 ##Done
 
